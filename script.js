@@ -191,9 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addTimeEntry() {
         const project = projectInput.value.trim();
-        const startTime = startTimeInput.value;
-        const endTime = endTimeInput.value;
-        const timeSpent = parseInt(timeSpentInput.value);
+        let startTime = startTimeInput.value;
+        let endTime = endTimeInput.value;
+        let timeSpent = parseInt(timeSpentInput.value);
         
         // Validation
         if (!project) {
@@ -204,6 +204,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if ((!startTime || !endTime) && !timeSpent) {
             alert('Please enter either start and end times or time spent');
             return;
+        }
+        
+        // If only time spent is provided, calculate start and end times
+        if (timeSpent && (!startTime || !endTime)) {
+            // Use current time as end time
+            const now = new Date();
+            endTime = now.toTimeString().substring(0, 5); // Format as HH:MM
+            
+            // Calculate start time by subtracting timeSpent minutes from now
+            const startDate = new Date(now.getTime() - timeSpent * 60000);
+            startTime = startDate.toTimeString().substring(0, 5); // Format as HH:MM
+            
+            // Update the input fields to show the calculated times
+            startTimeInput.value = startTime;
+            endTimeInput.value = endTime;
+        } else if (startTime && endTime) {
+            // If start and end times are provided, ensure timeSpent is calculated
+            if (!timeSpent) {
+                const start = new Date(`2000-01-01T${startTime}`);
+                const end = new Date(`2000-01-01T${endTime}`);
+                
+                // Handle overnight shifts
+                let diff = end - start;
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000; // Add 24 hours
+                }
+                
+                timeSpent = Math.floor(diff / 60000);
+                timeSpentInput.value = timeSpent;
+            }
         }
         
         // Create entry object
