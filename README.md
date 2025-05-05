@@ -9,6 +9,7 @@ A browser-based time tracking application that helps you track time spent on dif
 - **Flexible Time Entry**: Enter either start/end times or total time spent (automatically calculates timestamps)
 - **Project Totals**: View running totals for all projects
 - **Grouped Project Entries**: Entries are grouped by project with timestamps displayed horizontally
+- **Live Timer Functionality**: Start, pause, and finish timers for each project directly in the interface
 - **Export Functionality**: Export the entire month's data with project totals
 - **Persistent Storage**: All data is saved in your browser's local storage
 
@@ -24,7 +25,10 @@ A browser-based time tracking application that helps you track time spent on dif
 4. **Add the entry**: Click the "Enter" button to add the time entry
 5. **View your entries**: All entries for the selected date will appear below
 6. **Track project totals**: The left panel shows total time spent on each project
-7. **Export monthly data**: Click the "Export Month" button to download a text file with the current month's data and project totals
+7. **Use the timer functionality**: Each project has timer controls
+   - Click "Start" to begin tracking time for a project (automatically finishes any other running timer)
+   - Click "Finish" to complete the timer and add the time to your entries
+8. **Export monthly data**: Click the "Export Month" button to download a text file with the current month's data and project totals
 
 ## Data Storage
 

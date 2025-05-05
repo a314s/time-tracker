@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
         currentMonth: new Date(),
         projects: [],
         entries: [],
-        projectTotals: {}
+        projectTotals: {},
+        activeTimers: {}
     };
 
     // DOM elements
@@ -400,11 +401,51 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create project group container
             const projectGroupEl = document.createElement('div');
             projectGroupEl.classList.add('project-group');
+            projectGroupEl.dataset.project = projectName;
             
             // Create project header
             const projectHeaderEl = document.createElement('div');
             projectHeaderEl.classList.add('project-group-header');
-            projectHeaderEl.textContent = projectName;
+            
+            // Project name
+            const projectNameEl = document.createElement('div');
+            projectNameEl.classList.add('project-name');
+            projectNameEl.textContent = projectName;
+            projectHeaderEl.appendChild(projectNameEl);
+            
+            // Timer controls
+            const timerControlsEl = document.createElement('div');
+            timerControlsEl.classList.add('timer-controls');
+            
+            // Timer display
+            const timerDisplayEl = document.createElement('div');
+            timerDisplayEl.classList.add('timer-display');
+            timerDisplayEl.id = `timer-${projectName.replace(/\s+/g, '-')}`;
+            timerDisplayEl.textContent = '00:00:00';
+            
+            // Check if timer is active
+            if (state.activeTimers[projectName]) {
+                timerDisplayEl.classList.add('timer-active');
+                updateTimerDisplay(projectName);
+            }
+            
+            timerControlsEl.appendChild(timerDisplayEl);
+            
+            // Start button
+            const startBtn = document.createElement('button');
+            startBtn.classList.add('timer-btn', 'start-btn');
+            startBtn.textContent = 'Start';
+            startBtn.addEventListener('click', () => startTimer(projectName));
+            timerControlsEl.appendChild(startBtn);
+            
+            // Finish button
+            const finishBtn = document.createElement('button');
+            finishBtn.classList.add('timer-btn', 'finish-btn');
+            finishBtn.textContent = 'Finish';
+            finishBtn.addEventListener('click', () => finishTimer(projectName));
+            timerControlsEl.appendChild(finishBtn);
+            
+            projectHeaderEl.appendChild(timerControlsEl);
             projectGroupEl.appendChild(projectHeaderEl);
             
             // Create entries container
@@ -437,11 +478,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveData() {
         localStorage.setItem('timeTrackerProjects', JSON.stringify(state.projects));
         localStorage.setItem('timeTrackerEntries', JSON.stringify(state.entries));
+        saveTimerState();
     }
 
     function loadData() {
         const savedProjects = localStorage.getItem('timeTrackerProjects');
         const savedEntries = localStorage.getItem('timeTrackerEntries');
+        const savedTimers = localStorage.getItem('timeTrackerTimers');
         
         if (savedProjects) {
             state.projects = JSON.parse(savedProjects);
@@ -451,6 +494,175 @@ document.addEventListener('DOMContentLoaded', function() {
             state.entries = JSON.parse(savedEntries);
             updateProjectTotals();
         }
+        
+        if (savedTimers) {
+            state.activeTimers = JSON.parse(savedTimers);
+            
+            // Restart timers that were active
+            Object.keys(state.activeTimers).forEach(project => {
+                if (state.activeTimers[project].isRunning) {
+                    // Calculate elapsed time since last save
+                    const lastTimestamp = new Date(state.activeTimers[project].lastUpdated);
+                    const now = new Date();
+                    const elapsedSeconds = Math.floor((now - lastTimestamp) / 1000);
+                    
+                    // Add elapsed time to the timer
+                    state.activeTimers[project].elapsedSeconds += elapsedSeconds;
+                    state.activeTimers[project].lastUpdated = now.toISOString();
+                }
+            });
+        }
+    }
+    
+    // Timer functions
+    function startTimer(projectName) {
+        // Check if any other timer is running and finish it first
+        Object.keys(state.activeTimers).forEach(project => {
+            if (project !== projectName && state.activeTimers[project].isRunning) {
+                finishTimer(project);
+            }
+        });
+        
+        // If timer already exists, resume it
+        if (state.activeTimers[projectName]) {
+            if (!state.activeTimers[projectName].isRunning) {
+                state.activeTimers[projectName].isRunning = true;
+                state.activeTimers[projectName].lastUpdated = new Date().toISOString();
+            }
+        } else {
+            // Create new timer
+            state.activeTimers[projectName] = {
+                startTime: new Date().toISOString(),
+                lastUpdated: new Date().toISOString(),
+                elapsedSeconds: 0,
+                isRunning: true
+            };
+        }
+        
+        // Add active class to timer display
+        const timerDisplay = document.getElementById(`timer-${projectName.replace(/\s+/g, '-')}`);
+        if (timerDisplay) {
+            timerDisplay.classList.add('timer-active');
+        }
+        
+        // Start updating the display
+        updateTimerDisplay(projectName);
+        
+        // Save timer state
+        saveTimerState();
+    }
+    
+    function pauseTimer(projectName) {
+        if (state.activeTimers[projectName] && state.activeTimers[projectName].isRunning) {
+            // Calculate elapsed time
+            const lastUpdate = new Date(state.activeTimers[projectName].lastUpdated);
+            const now = new Date();
+            const elapsedSeconds = Math.floor((now - lastUpdate) / 1000);
+            
+            // Update timer
+            state.activeTimers[projectName].elapsedSeconds += elapsedSeconds;
+            state.activeTimers[projectName].lastUpdated = now.toISOString();
+            state.activeTimers[projectName].isRunning = false;
+            
+            // Remove active class from timer display
+            const timerDisplay = document.getElementById(`timer-${projectName.replace(/\s+/g, '-')}`);
+            if (timerDisplay) {
+                timerDisplay.classList.remove('timer-active');
+            }
+            
+            // Update display one last time
+            updateTimerDisplay(projectName);
+            
+            // Save timer state
+            saveTimerState();
+        }
+    }
+    
+    function finishTimer(projectName) {
+        if (state.activeTimers[projectName]) {
+            // If timer is running, pause it first to calculate final time
+            if (state.activeTimers[projectName].isRunning) {
+                pauseTimer(projectName);
+            }
+            
+            // Calculate total minutes
+            const totalMinutes = Math.ceil(state.activeTimers[projectName].elapsedSeconds / 60);
+            
+            if (totalMinutes > 0) {
+                // Create a new entry
+                const now = new Date();
+                const endTime = now.toTimeString().substring(0, 5); // Format as HH:MM
+                
+                // Calculate start time by subtracting elapsed time
+                const startDate = new Date(now.getTime() - (totalMinutes * 60000));
+                const startTime = startDate.toTimeString().substring(0, 5); // Format as HH:MM
+                
+                const entry = {
+                    id: Date.now(),
+                    project: projectName,
+                    date: state.selectedDate.toISOString().split('T')[0],
+                    startTime,
+                    endTime,
+                    timeSpent: totalMinutes,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Add to entries
+                state.entries.push(entry);
+                
+                // Update project totals
+                updateProjectTotals();
+                
+                // Save data
+                saveData();
+                
+                // Re-render entries
+                renderEntries();
+            }
+            
+            // Remove the timer
+            delete state.activeTimers[projectName];
+            saveTimerState();
+        }
+    }
+    
+    function updateTimerDisplay(projectName) {
+        const timerDisplay = document.getElementById(`timer-${projectName.replace(/\s+/g, '-')}`);
+        if (!timerDisplay || !state.activeTimers[projectName]) return;
+        
+        let seconds = state.activeTimers[projectName].elapsedSeconds;
+        
+        // If timer is running, add the time since last update
+        if (state.activeTimers[projectName].isRunning) {
+            const lastUpdate = new Date(state.activeTimers[projectName].lastUpdated);
+            const now = new Date();
+            const additionalSeconds = Math.floor((now - lastUpdate) / 1000);
+            seconds += additionalSeconds;
+        }
+        
+        // Format and display the time
+        timerDisplay.textContent = formatTime(seconds);
+        
+        // If timer is running, schedule the next update
+        if (state.activeTimers[projectName].isRunning) {
+            setTimeout(() => updateTimerDisplay(projectName), 1000);
+        }
+    }
+    
+    function formatTime(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        return [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            seconds.toString().padStart(2, '0')
+        ].join(':');
+    }
+    
+    function saveTimerState() {
+        localStorage.setItem('timeTrackerTimers', JSON.stringify(state.activeTimers));
     }
     
     function exportMonthData() {

@@ -223,12 +223,89 @@ body {
 }
 
 .project-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-weight: bold;
     margin-bottom: 10px;
     color: #343a40;
     font-size: 16px;
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 8px;
+}
+
+.project-name {
+    flex: 1;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.timer-display {
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #6c757d;
+    min-width: 70px;
+    text-align: center;
+}
+
+.timer-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.start-btn {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.start-btn:hover {
+    background-color: #218838;
+}
+
+.pause-btn {
+    background-color: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.pause-btn:hover {
+    background-color: #e0a800;
+}
+
+.finish-btn {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.finish-btn:hover {
+    background-color: #c82333;
+}
+
+.timer-active {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 .project-entries {
