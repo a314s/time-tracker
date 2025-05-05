@@ -378,6 +378,40 @@ body {
     min-width: 150px;
     max-width: calc(33.333% - 10px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.entry-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.edit-entry-btn,
+.delete-entry-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 12px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.edit-entry-btn {
+    color: #007bff;
+}
+
+.edit-entry-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.delete-entry-btn {
+    color: #dc3545;
+}
+
+.delete-entry-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 .entry-time {
@@ -409,4 +443,84 @@ body {
     display: flex;
     justify-content: space-between;
     color: #6c757d;
+}
+
+/* Edit form styles */
+.edit-form {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 15px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.edit-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.edit-form-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.close-edit-form {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.edit-form-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.save-edit-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-edit-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }

@@ -520,6 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
             projectEntries.forEach(entry => {
                 const entryEl = document.createElement('div');
                 entryEl.classList.add('entry-item');
+                entryEl.dataset.entryId = entry.id;
                 
                 let timeDisplay = '';
                 if (entry.startTime && entry.endTime) {
@@ -529,9 +530,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 entryEl.innerHTML = `
                     <div class="entry-time">${timeDisplay}</div>
                     <div class="entry-duration">${entry.timeSpent} minutes</div>
+                    <div class="entry-actions">
+                        <button class="edit-entry-btn">Edit</button>
+                        <button class="delete-entry-btn">Delete</button>
+                    </div>
                 `;
                 
+                // Add event listeners for edit and delete buttons
                 projectEntriesEl.appendChild(entryEl);
+                
+                // Add event listeners after appending to DOM
+                const editBtn = entryEl.querySelector('.edit-entry-btn');
+                const deleteBtn = entryEl.querySelector('.delete-entry-btn');
+                
+                editBtn.addEventListener('click', () => editEntry(entry.id));
+                deleteBtn.addEventListener('click', () => deleteEntry(entry.id));
             });
             
             projectGroupEl.appendChild(projectEntriesEl);
@@ -727,6 +740,262 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function saveTimerState() {
         localStorage.setItem('timeTrackerTimers', JSON.stringify(state.activeTimers));
+    }
+    
+    // Edit and Delete Entry Functions
+    function editEntry(entryId) {
+        // Find the entry to edit
+        const entry = state.entries.find(entry => entry.id === entryId);
+        if (!entry) return;
+        
+        // Create and show edit form
+        createEditForm(entry);
+    }
+    
+    function deleteEntry(entryId) {
+        // Confirm deletion
+        if (!confirm('Are you sure you want to delete this entry?')) return;
+        
+        // Find the entry index
+        const entryIndex = state.entries.findIndex(entry => entry.id === entryId);
+        if (entryIndex === -1) return;
+        
+        // Remove the entry
+        state.entries.splice(entryIndex, 1);
+        
+        // Update project totals
+        updateProjectTotals();
+        
+        // Save data
+        saveData();
+        
+        // Re-render entries
+        renderEntries();
+    }
+    
+    function createEditForm(entry) {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
+        document.body.appendChild(overlay);
+        
+        // Create form container
+        const formContainer = document.createElement('div');
+        formContainer.classList.add('edit-form');
+        
+        // Form header
+        const formHeader = document.createElement('div');
+        formHeader.classList.add('edit-form-header');
+        formHeader.innerHTML = `
+            <div class="edit-form-title">Edit Time Entry</div>
+            <button class="close-edit-form">&times;</button>
+        `;
+        
+        // Form inputs
+        const formInputs = document.createElement('div');
+        formInputs.classList.add('edit-form-inputs');
+        
+        // Project input
+        const projectField = document.createElement('div');
+        projectField.classList.add('time-field');
+        projectField.innerHTML = `
+            <label for="edit-project">Project:</label>
+            <input type="text" id="edit-project" value="${entry.project}" list="projectOptions">
+        `;
+        
+        // Time inputs
+        const timeInputs = document.createElement('div');
+        timeInputs.classList.add('time-inputs');
+        
+        // Start time
+        const startTimeField = document.createElement('div');
+        startTimeField.classList.add('time-field');
+        startTimeField.innerHTML = `
+            <label for="edit-start-time">Start Time:</label>
+            <input type="time" id="edit-start-time" value="${entry.startTime || ''}">
+        `;
+        
+        // End time
+        const endTimeField = document.createElement('div');
+        endTimeField.classList.add('time-field');
+        endTimeField.innerHTML = `
+            <label for="edit-end-time">End Time:</label>
+            <input type="time" id="edit-end-time" value="${entry.endTime || ''}">
+        `;
+        
+        // Time spent
+        const timeSpentField = document.createElement('div');
+        timeSpentField.classList.add('time-field');
+        timeSpentField.innerHTML = `
+            <label for="edit-time-spent">Time Spent (minutes):</label>
+            <input type="number" id="edit-time-spent" value="${entry.timeSpent}" min="0">
+        `;
+        
+        // Add time inputs to form
+        timeInputs.appendChild(startTimeField);
+        timeInputs.appendChild(endTimeField);
+        timeInputs.appendChild(timeSpentField);
+        
+        // Form actions
+        const formActions = document.createElement('div');
+        formActions.classList.add('edit-form-actions');
+        formActions.innerHTML = `
+            <button class="cancel-edit-btn">Cancel</button>
+            <button class="save-edit-btn">Save Changes</button>
+        `;
+        
+        // Build form
+        formInputs.appendChild(projectField);
+        formInputs.appendChild(timeInputs);
+        
+        formContainer.appendChild(formHeader);
+        formContainer.appendChild(formInputs);
+        formContainer.appendChild(formActions);
+        
+        document.body.appendChild(formContainer);
+        
+        // Get form elements
+        const closeBtn = formContainer.querySelector('.close-edit-form');
+        const cancelBtn = formContainer.querySelector('.cancel-edit-btn');
+        const saveBtn = formContainer.querySelector('.save-edit-btn');
+        const projectInput = formContainer.querySelector('#edit-project');
+        const startTimeInput = formContainer.querySelector('#edit-start-time');
+        const endTimeInput = formContainer.querySelector('#edit-end-time');
+        const timeSpentInput = formContainer.querySelector('#edit-time-spent');
+        
+        // Add event listeners for time calculation
+        startTimeInput.addEventListener('change', () => {
+            if (startTimeInput.value && endTimeInput.value) {
+                const start = new Date(`2000-01-01T${startTimeInput.value}`);
+                const end = new Date(`2000-01-01T${endTimeInput.value}`);
+                
+                // Handle overnight shifts
+                let diff = end - start;
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000; // Add 24 hours
+                }
+                
+                const minutes = Math.floor(diff / 60000);
+                timeSpentInput.value = minutes;
+            }
+        });
+        
+        endTimeInput.addEventListener('change', () => {
+            if (startTimeInput.value && endTimeInput.value) {
+                const start = new Date(`2000-01-01T${startTimeInput.value}`);
+                const end = new Date(`2000-01-01T${endTimeInput.value}`);
+                
+                // Handle overnight shifts
+                let diff = end - start;
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000; // Add 24 hours
+                }
+                
+                const minutes = Math.floor(diff / 60000);
+                timeSpentInput.value = minutes;
+            }
+        });
+        
+        timeSpentInput.addEventListener('input', () => {
+            if (timeSpentInput.value) {
+                // Clear start and end times if user manually edits time spent
+                if (document.activeElement === timeSpentInput) {
+                    startTimeInput.value = '';
+                    endTimeInput.value = '';
+                }
+            }
+        });
+        
+        // Close form function
+        const closeForm = () => {
+            document.body.removeChild(overlay);
+            document.body.removeChild(formContainer);
+        };
+        
+        // Add event listeners
+        closeBtn.addEventListener('click', closeForm);
+        cancelBtn.addEventListener('click', closeForm);
+        
+        saveBtn.addEventListener('click', () => {
+            // Validate form
+            const project = projectInput.value.trim();
+            const startTime = startTimeInput.value;
+            const endTime = endTimeInput.value;
+            const timeSpent = parseInt(timeSpentInput.value);
+            
+            if (!project) {
+                alert('Please enter a project name');
+                return;
+            }
+            
+            if ((!startTime || !endTime) && !timeSpent) {
+                alert('Please enter either start and end times or time spent');
+                return;
+            }
+            
+            // If only time spent is provided, calculate start and end times
+            let updatedStartTime = startTime;
+            let updatedEndTime = endTime;
+            let updatedTimeSpent = timeSpent;
+            
+            if (timeSpent && (!startTime || !endTime)) {
+                // Use current time as end time
+                const now = new Date();
+                updatedEndTime = now.toTimeString().substring(0, 5); // Format as HH:MM
+                
+                // Calculate start time by subtracting timeSpent minutes from now
+                const startDate = new Date(now.getTime() - timeSpent * 60000);
+                updatedStartTime = startDate.toTimeString().substring(0, 5); // Format as HH:MM
+            } else if (startTime && endTime && !timeSpent) {
+                // Calculate time spent from start and end times
+                const start = new Date(`2000-01-01T${startTime}`);
+                const end = new Date(`2000-01-01T${endTime}`);
+                
+                // Handle overnight shifts
+                let diff = end - start;
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000; // Add 24 hours
+                }
+                
+                updatedTimeSpent = Math.floor(diff / 60000);
+            }
+            
+            // Update entry
+            const entryIndex = state.entries.findIndex(e => e.id === entry.id);
+            if (entryIndex !== -1) {
+                // Update project in projects list if it's new
+                if (!state.projects.includes(project)) {
+                    state.projects.unshift(project);
+                    updateProjectOptions();
+                } else if (project !== entry.project) {
+                    // Move project to top if it's different from original
+                    state.projects = state.projects.filter(p => p !== project);
+                    state.projects.unshift(project);
+                    updateProjectOptions();
+                }
+                
+                // Update the entry
+                state.entries[entryIndex] = {
+                    ...entry,
+                    project,
+                    startTime: updatedStartTime,
+                    endTime: updatedEndTime,
+                    timeSpent: updatedTimeSpent
+                };
+                
+                // Update project totals
+                updateProjectTotals();
+                
+                // Save data
+                saveData();
+                
+                // Re-render entries
+                renderEntries();
+            }
+            
+            // Close the form
+            closeForm();
+        });
     }
     
     function exportMonthData() {
