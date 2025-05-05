@@ -54,6 +54,27 @@ body {
     background-color: #e9ecef;
 }
 
+.calendar-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
 .weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);

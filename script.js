@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentMonthEl = document.getElementById('currentMonth');
     const prevMonthBtn = document.getElementById('prevMonth');
     const nextMonthBtn = document.getElementById('nextMonth');
+    const exportMonthBtn = document.getElementById('exportMonth');
     const projectInput = document.getElementById('projectInput');
     const projectOptions = document.getElementById('projectOptions');
     const startTimeInput = document.getElementById('startTime');
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
         state.currentMonth.setMonth(state.currentMonth.getMonth() + 1);
         renderCalendar();
     });
+
+    exportMonthBtn.addEventListener('click', exportMonthData);
 
     addEntryBtn.addEventListener('click', addTimeEntry);
 
@@ -383,5 +386,97 @@ document.addEventListener('DOMContentLoaded', function() {
             state.entries = JSON.parse(savedEntries);
             updateProjectTotals();
         }
+    }
+    
+    function exportMonthData() {
+        // Get current month and year
+        const year = state.currentMonth.getFullYear();
+        const month = state.currentMonth.getMonth();
+        const monthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
+        
+        // Filter entries for the current month
+        const monthEntries = state.entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate.getMonth() === month && entryDate.getFullYear() === year;
+        });
+        
+        // Group entries by date
+        const entriesByDate = {};
+        monthEntries.forEach(entry => {
+            if (!entriesByDate[entry.date]) {
+                entriesByDate[entry.date] = [];
+            }
+            entriesByDate[entry.date].push(entry);
+        });
+        
+        // Calculate project totals for the month
+        const monthProjectTotals = {};
+        monthEntries.forEach(entry => {
+            if (!monthProjectTotals[entry.project]) {
+                monthProjectTotals[entry.project] = 0;
+            }
+            monthProjectTotals[entry.project] += entry.timeSpent;
+        });
+        
+        // Format project totals
+        const formattedProjectTotals = Object.entries(monthProjectTotals)
+            .sort((a, b) => b[1] - a[1])
+            .map(([project, minutes]) => {
+                const hours = Math.floor(minutes / 60);
+                const remainingMinutes = minutes % 60;
+                return `${project}: ${hours}h ${remainingMinutes}m`;
+            })
+            .join('\n');
+        
+        // Format entries by date
+        let formattedEntries = '';
+        const sortedDates = Object.keys(entriesByDate).sort();
+        
+        sortedDates.forEach(date => {
+            const formattedDate = new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            formattedEntries += `\n\n${formattedDate}\n`;
+            formattedEntries += '------------------------------\n';
+            
+            entriesByDate[date].forEach(entry => {
+                let timeInfo = '';
+                if (entry.startTime && entry.endTime) {
+                    timeInfo = `${entry.startTime} - ${entry.endTime}`;
+                }
+                
+                formattedEntries += `${entry.project} (${entry.timeSpent} minutes)`;
+                if (timeInfo) {
+                    formattedEntries += ` [${timeInfo}]`;
+                }
+                formattedEntries += '\n';
+            });
+        });
+        
+        // Create the full export content
+        const exportContent = `# Time Tracking Report: ${monthName} ${year}\n\n` +
+            `## Project Totals\n\n${formattedProjectTotals || 'No entries for this month.'}\n\n` +
+            `## Daily Entries${formattedEntries || '\n\nNo entries for this month.'}`;
+        
+        // Create a Blob and download link
+        const blob = new Blob([exportContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary link and trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `TimeTracker_${monthName}_${year}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
     }
 });
