@@ -372,31 +372,66 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateString = state.selectedDate.toISOString().split('T')[0];
         const filteredEntries = state.entries.filter(entry => entry.date === dateString);
         
-        // Sort by timestamp (newest first)
-        filteredEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        filteredEntries.forEach(entry => {
-            const entryEl = document.createElement('div');
-            entryEl.classList.add('entry-item');
-            
-            let timeDisplay = '';
-            if (entry.startTime && entry.endTime) {
-                timeDisplay = `${entry.startTime} - ${entry.endTime}`;
-            }
-            
-            entryEl.innerHTML = `
-                <div class="entry-project">${entry.project}</div>
-                <div class="entry-time">${timeDisplay}</div>
-                <div class="entry-duration">${entry.timeSpent} minutes</div>
-            `;
-            
-            entriesListEl.appendChild(entryEl);
-        });
-        
         // If no entries, show message
         if (filteredEntries.length === 0) {
             entriesListEl.innerHTML = '<p>No entries for this date</p>';
+            return;
         }
+        
+        // Group entries by project
+        const entriesByProject = {};
+        filteredEntries.forEach(entry => {
+            if (!entriesByProject[entry.project]) {
+                entriesByProject[entry.project] = [];
+            }
+            entriesByProject[entry.project].push(entry);
+        });
+        
+        // Sort projects alphabetically
+        const sortedProjects = Object.keys(entriesByProject).sort();
+        
+        // Create project groups
+        sortedProjects.forEach(projectName => {
+            const projectEntries = entriesByProject[projectName];
+            
+            // Sort entries by timestamp (newest first)
+            projectEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Create project group container
+            const projectGroupEl = document.createElement('div');
+            projectGroupEl.classList.add('project-group');
+            
+            // Create project header
+            const projectHeaderEl = document.createElement('div');
+            projectHeaderEl.classList.add('project-group-header');
+            projectHeaderEl.textContent = projectName;
+            projectGroupEl.appendChild(projectHeaderEl);
+            
+            // Create entries container
+            const projectEntriesEl = document.createElement('div');
+            projectEntriesEl.classList.add('project-entries');
+            
+            // Add each entry
+            projectEntries.forEach(entry => {
+                const entryEl = document.createElement('div');
+                entryEl.classList.add('entry-item');
+                
+                let timeDisplay = '';
+                if (entry.startTime && entry.endTime) {
+                    timeDisplay = `${entry.startTime} - ${entry.endTime}`;
+                }
+                
+                entryEl.innerHTML = `
+                    <div class="entry-time">${timeDisplay}</div>
+                    <div class="entry-duration">${entry.timeSpent} minutes</div>
+                `;
+                
+                projectEntriesEl.appendChild(entryEl);
+            });
+            
+            projectGroupEl.appendChild(projectEntriesEl);
+            entriesListEl.appendChild(projectGroupEl);
+        });
     }
 
     function saveData() {

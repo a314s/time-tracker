@@ -8,6 +8,7 @@ A browser-based time tracking application that helps you track time spent on dif
 - **Project Input with Auto-Complete**: Dropdown menu remembers previously entered projects
 - **Flexible Time Entry**: Enter either start/end times or total time spent (automatically calculates timestamps)
 - **Project Totals**: View running totals for all projects
+- **Grouped Project Entries**: Entries are grouped by project with timestamps displayed horizontally
 - **Export Functionality**: Export the entire month's data with project totals
 - **Persistent Storage**: All data is saved in your browser's local storage
 
