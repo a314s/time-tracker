@@ -7,7 +7,7 @@ A browser-based time tracking application that helps you track time spent on dif
 - **Calendar View**: Select dates to view and add time entries
 - **Project Input with Auto-Complete**: Dropdown menu remembers previously entered projects
 - **Flexible Time Entry**: Enter either start/end times or total time spent (automatically calculates timestamps)
-- **Project Totals**: View running totals for all projects
+- **Project Totals**: View selected date's time and running totals for all projects, sorted by most recently worked on
 - **Grouped Project Entries**: Entries are grouped by project with timestamps displayed horizontally
 - **Live Timer Functionality**: Start, pause, and finish timers for each project directly in the interface
 - **Export Functionality**: Export the entire month's data with project totals

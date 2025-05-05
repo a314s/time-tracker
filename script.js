@@ -31,7 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize calendar and project options
     renderCalendar();
     updateProjectOptions();
-    renderProjectTotals();
+    
+    // Render entries for the current date
+    renderEntries();
+    
+    // Update project totals to show the current date's data
+    updateProjectTotals();
 
     // Event listeners
     prevMonthBtn.addEventListener('click', () => {
@@ -169,6 +174,9 @@ document.addEventListener('DOMContentLoaded', function() {
             state.currentMonth = new Date(year, month - 1, 1);
             renderCalendar();
         }
+        
+        // Update project totals for the selected date
+        updateProjectTotals();
         
         // Filter entries for the selected date
         renderEntries();
@@ -327,12 +335,36 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset totals
         state.projectTotals = {};
         
+        // Get selected date string
+        const selectedDateString = state.selectedDate.toISOString().split('T')[0];
+        
+        // Track last worked time for each project
+        const lastWorkedTime = {};
+        
         // Calculate totals
         state.entries.forEach(entry => {
             if (!state.projectTotals[entry.project]) {
-                state.projectTotals[entry.project] = 0;
+                state.projectTotals[entry.project] = {
+                    total: 0,
+                    selectedDay: 0,
+                    lastWorked: null
+                };
             }
-            state.projectTotals[entry.project] += entry.timeSpent;
+            
+            // Add to total time
+            state.projectTotals[entry.project].total += entry.timeSpent;
+            
+            // Add to selected day's time if entry is from selected date
+            if (entry.date === selectedDateString) {
+                state.projectTotals[entry.project].selectedDay += entry.timeSpent;
+            }
+            
+            // Update last worked time if this entry is more recent
+            const entryTime = new Date(entry.timestamp).getTime();
+            if (!lastWorkedTime[entry.project] || entryTime > lastWorkedTime[entry.project]) {
+                lastWorkedTime[entry.project] = entryTime;
+                state.projectTotals[entry.project].lastWorked = entry.timestamp;
+            }
         });
         
         // Render totals
@@ -342,19 +374,51 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderProjectTotals() {
         projectTotalsEl.innerHTML = '';
         
-        // Sort projects by total time (descending)
-        const sortedProjects = Object.entries(state.projectTotals)
-            .sort((a, b) => b[1] - a[1]);
+        // Get formatted date for the selected day
+        const selectedDate = state.selectedDate;
+        const formattedDate = selectedDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
         
-        sortedProjects.forEach(([project, minutes]) => {
-            const hours = Math.floor(minutes / 60);
-            const remainingMinutes = minutes % 60;
+        // Add header row
+        const headerEl = document.createElement('div');
+        headerEl.classList.add('project-total-header');
+        headerEl.innerHTML = `
+            <span>Project</span>
+            <span>${formattedDate}</span>
+            <span>Total</span>
+        `;
+        projectTotalsEl.appendChild(headerEl);
+        
+        // Sort projects by last worked time (most recent first)
+        const sortedProjects = Object.entries(state.projectTotals)
+            .sort((a, b) => {
+                // If either project has no last worked time, sort by total time
+                if (!a[1].lastWorked || !b[1].lastWorked) {
+                    return b[1].total - a[1].total;
+                }
+                // Otherwise sort by last worked time (most recent first)
+                return new Date(b[1].lastWorked) - new Date(a[1].lastWorked);
+            });
+        
+        sortedProjects.forEach(([project, data]) => {
+            // Format total time
+            const totalHours = Math.floor(data.total / 60);
+            const totalMinutes = data.total % 60;
+            const totalFormatted = `${totalHours}h ${totalMinutes}m`;
+            
+            // Format selected day's time
+            const selectedDayHours = Math.floor(data.selectedDay / 60);
+            const selectedDayMinutes = data.selectedDay % 60;
+            const selectedDayFormatted = data.selectedDay > 0 ? `${selectedDayHours}h ${selectedDayMinutes}m` : '-';
             
             const totalEl = document.createElement('div');
             totalEl.classList.add('project-total-item');
             totalEl.innerHTML = `
-                <span>${project}</span>
-                <span>${hours}h ${remainingMinutes}m</span>
+                <span class="project-name" title="${project}">${project}</span>
+                <span class="selected-day-time">${selectedDayFormatted}</span>
+                <span class="total-time">${totalFormatted}</span>
             `;
             
             projectTotalsEl.appendChild(totalEl);

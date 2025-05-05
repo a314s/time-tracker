@@ -133,11 +133,67 @@ body {
     overflow-y: auto;
 }
 
+.project-total-header {
+    display: grid;
+    grid-template-columns: 1fr 100px 100px;
+    gap: 15px;
+    font-weight: bold;
+    color: #495057;
+    padding: 8px 0;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.project-total-header span:nth-child(2),
+.project-total-header span:nth-child(3) {
+    text-align: right;
+}
+
 .project-total-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 100px 100px;
+    gap: 15px;
     padding: 8px 0;
     border-bottom: 1px solid #e9ecef;
+}
+
+.project-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+    cursor: default;
+}
+
+.project-name:hover {
+    overflow: visible;
+}
+
+.project-name:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 0;
+    top: -30px;
+    background-color: #495057;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.selected-day-time {
+    color: #28a745;
+    text-align: right;
+}
+
+.total-time {
+    color: #495057;
+    text-align: right;
+    font-weight: 500;
 }
 
 /* Right Panel - Time Entry Forms */
