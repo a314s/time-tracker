@@ -1,0 +1,238 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Left Panel - Calendar and Totals */
+.left-panel {
+    width: 350px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #e9ecef;
+}
+
+.calendar-container {
+    margin-bottom: 30px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #495057;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.calendar-header button:hover {
+    background-color: #e9ecef;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #6c757d;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    background-color: #e9ecef;
+}
+
+.calendar-day.today {
+    background-color: #007bff;
+    color: white;
+}
+
+.calendar-day.selected {
+    background-color: #6c757d;
+    color: white;
+}
+
+.calendar-day.other-month {
+    color: #adb5bd;
+}
+
+.totals-container {
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.totals-container h3 {
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.project-totals {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.project-total-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Right Panel - Time Entry Forms */
+.right-panel {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-entry-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.project-input-container {
+    margin-bottom: 15px;
+}
+
+.project-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.time-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.time-field {
+    flex: 1;
+    min-width: 150px;
+}
+
+.time-field label {
+    display: block;
+    margin-bottom: 5px;
+    color: #495057;
+}
+
+.time-field input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.add-entry-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.add-entry-btn:hover {
+    background-color: #0069d9;
+}
+
+.entries-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.entry-item {
+    background-color: #fff;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.entry-project {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #343a40;
+}
+
+.entry-time {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.entry-duration {
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Summary display */
+.time-entry-summary {
+    background-color: #e9f7ef;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #28a745;
+}
+
+.summary-project {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.summary-details {
+    display: flex;
+    justify-content: space-between;
+    color: #6c757d;
+}
