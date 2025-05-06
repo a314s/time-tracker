@@ -1,9 +1,10 @@
 # Time Tracker Application
 
-A browser-based time tracking application that helps you track time spent on different projects.
+A browser-based time tracking application that helps you track time spent on different projects. The application now supports multiple user accounts, allowing different users to track their hours separately.
 
 ## Features
 
+- **User Accounts**: Register and login to track your hours separately from other users
 - **Calendar View**: Select dates to view and add time entries
 - **Project Input with Auto-Complete**: Dropdown menu remembers previously entered projects
 - **Flexible Time Entry**: Enter either start/end times or total time spent (automatically calculates timestamps)
@@ -16,24 +17,28 @@ A browser-based time tracking application that helps you track time spent on dif
 
 ## How to Use
 
-1. **Open the application**: Open `index.html` in your web browser
-2. **Select a date**: Click on a day in the calendar to select it
-3. **Enter time information**:
+1. **Create an account or login**:
+   - Open `login.html` in your web browser
+   - Register with your name, email, and password if you're a new user
+   - Login with your email and password if you already have an account
+2. **Open the application**: After logging in, you'll be redirected to the main application
+3. **Select a date**: Click on a day in the calendar to select it
+4. **Enter time information**:
    - Type a project name in the input field (previously used projects will appear in a dropdown)
    - Enter either:
      - Start time and end time, OR
      - Total time spent in minutes (the app will automatically use the current time as the end time and calculate the start time)
-4. **Add the entry**: Click the "Enter" button to add the time entry
-5. **View your entries**: All entries for the selected date will appear below
-6. **Track project totals**: The left panel shows total time spent on each project
-7. **Use the timer functionality**: Each project has timer controls
+5. **Add the entry**: Click the "Enter" button to add the time entry
+6. **View your entries**: All entries for the selected date will appear below
+7. **Track project totals**: The left panel shows total time spent on each project
+8. **Use the timer functionality**: Each project has timer controls
    - Click "Start" to begin tracking time for a project (automatically finishes any other running timer)
    - Click "Finish" to complete the timer and add the time to your entries
-8. **Edit or delete entries**: Each time entry has edit and delete options
+9. **Edit or delete entries**: Each time entry has edit and delete options
    - Click "Edit" to modify an entry's project, time, or duration
    - Click "Delete" to remove an entry
    - Changes are automatically reflected in project totals
-9. **Export monthly data**: Click the "Export Month" button to download a text file with the current month's data and project totals
+10. **Export monthly data**: Click the "Export Month" button to download a text file with the current month's data and project totals
 
 ## Data Storage
 
@@ -41,6 +46,15 @@ All your time tracking data is stored locally in your browser. This means:
 - Your data stays on your computer
 - No internet connection is required
 - Clearing your browser data will erase your time tracking history
+- Each user account's data is stored separately
+- User authentication is handled locally (no server-side validation)
+
+### User Account Security
+
+Since this is a client-side only application:
+- Passwords are stored in plain text in localStorage (not recommended for sensitive data)
+- All user data is accessible to anyone with access to your device
+- For a production environment, server-side authentication would be recommended
 
 ## Navigation
 

@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('timeTrackerCurrentUser'));
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Display current user name
+    document.getElementById('currentUserName').textContent = currentUser.name;
+    
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('timeTrackerCurrentUser');
+        window.location.href = 'login.html';
+    });
     // State management
     const state = {
         selectedDate: new Date(),
@@ -6,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         projects: [],
         entries: [],
         projectTotals: {},
-        activeTimers: {}
+        activeTimers: {},
+        userId: currentUser.id
     };
 
     // DOM elements
@@ -553,27 +569,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveData() {
-        localStorage.setItem('timeTrackerProjects', JSON.stringify(state.projects));
-        localStorage.setItem('timeTrackerEntries', JSON.stringify(state.entries));
+        // Get all user data
+        const allUserData = JSON.parse(localStorage.getItem('timeTrackerAllData') || '{}');
+        
+        // Update current user's data
+        allUserData[state.userId] = {
+            projects: state.projects,
+            entries: state.entries
+        };
+        
+        // Save all data back to localStorage
+        localStorage.setItem('timeTrackerAllData', JSON.stringify(allUserData));
         saveTimerState();
     }
 
     function loadData() {
-        const savedProjects = localStorage.getItem('timeTrackerProjects');
-        const savedEntries = localStorage.getItem('timeTrackerEntries');
-        const savedTimers = localStorage.getItem('timeTrackerTimers');
+        // Get all user data
+        const allUserData = JSON.parse(localStorage.getItem('timeTrackerAllData') || '{}');
         
-        if (savedProjects) {
-            state.projects = JSON.parse(savedProjects);
-        }
+        // Get current user's data
+        const userData = allUserData[state.userId] || { projects: [], entries: [] };
         
-        if (savedEntries) {
-            state.entries = JSON.parse(savedEntries);
-            updateProjectTotals();
-        }
+        state.projects = userData.projects || [];
+        state.entries = userData.entries || [];
+        updateProjectTotals();
         
-        if (savedTimers) {
-            state.activeTimers = JSON.parse(savedTimers);
+        // Load active timers for current user
+        const allTimers = JSON.parse(localStorage.getItem('timeTrackerAllTimers') || '{}');
+        const savedTimers = allTimers[state.userId] || {};
+        
+        if (Object.keys(savedTimers).length > 0) {
+            state.activeTimers = savedTimers;
             
             // Restart timers that were active
             Object.keys(state.activeTimers).forEach(project => {
@@ -590,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    
+
     // Timer functions
     function startTimer(projectName) {
         // Check if any other timer is running and finish it first
@@ -739,7 +765,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function saveTimerState() {
-        localStorage.setItem('timeTrackerTimers', JSON.stringify(state.activeTimers));
+        // Get all timers
+        const allTimers = JSON.parse(localStorage.getItem('timeTrackerAllTimers') || '{}');
+        
+        // Update current user's timers
+        allTimers[state.userId] = state.activeTimers;
+        
+        // Save all timers back to localStorage
+        localStorage.setItem('timeTrackerAllTimers', JSON.stringify(allTimers));
     }
     
     // Edit and Delete Entry Functions

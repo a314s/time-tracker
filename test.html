@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker - Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time Tracker - Test User Accounts</h1>
+    
+    <div class="test-section">
+        <h2>Create Test Users</h2>
+        <button id="createUsers">Create Test Users</button>
+        <div id="createResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Add Test Data</h2>
+        <button id="addTestData">Add Sample Time Entries</button>
+        <div id="dataResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>View User Data</h2>
+        <button id="viewUserData">View All User Data</button>
+        <div id="viewResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Clear All Data</h2>
+        <button id="clearData">Clear All Data</button>
+        <div id="clearResult" class="result"></div>
+    </div>
+    
+    <script>
+        document.getElementById('createUsers').addEventListener('click', function() {
+            // Create test users
+            const users = [
+                {
+                    id: 'user1',
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                    password: 'password123',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'user2',
+                    name: 'Jane Smith',
+                    email: 'jane@example.com',
+                    password: 'password456',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            // Save to localStorage
+            localStorage.setItem('timeTrackerUsers', JSON.stringify(users));
+            
+            // Display result
+            document.getElementById('createResult').innerHTML = `
+                <p>Created 2 test users:</p>
+                <pre>${JSON.stringify(users, null, 2)}</pre>
+            `;
+        });
+        
+        document.getElementById('addTestData').addEventListener('click', function() {
+            // Get all user data
+            const allUserData = JSON.parse(localStorage.getItem('timeTrackerAllData') || '{}');
+            
+            // Sample projects
+            const projects1 = ['Website Development', 'Client Meeting', 'Documentation'];
+            const projects2 = ['UI Design', 'Research', 'Team Meeting'];
+            
+            // Sample entries for user1
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+            
+            const user1Entries = [
+                {
+                    id: 'entry1',
+                    project: 'Website Development',
+                    date: today,
+                    startTime: '09:00',
+                    endTime: '11:30',
+                    timeSpent: 150
+                },
+                {
+                    id: 'entry2',
+                    project: 'Client Meeting',
+                    date: today,
+                    startTime: '13:00',
+                    endTime: '14:00',
+                    timeSpent: 60
+                },
+                {
+                    id: 'entry3',
+                    project: 'Documentation',
+                    date: yesterday,
+                    startTime: '10:00',
+                    endTime: '12:00',
+                    timeSpent: 120
+                }
+            ];
+            
+            // Sample entries for user2
+            const user2Entries = [
+                {
+                    id: 'entry4',
+                    project: 'UI Design',
+                    date: today,
+                    startTime: '08:30',
+                    endTime: '12:00',
+                    timeSpent: 210
+                },
+                {
+                    id: 'entry5',
+                    project: 'Research',
+                    date: today,
+                    startTime: '14:00',
+                    endTime: '16:30',
+                    timeSpent: 150
+                },
+                {
+                    id: 'entry6',
+                    project: 'Team Meeting',
+                    date: yesterday,
+                    startTime: '15:00',
+                    endTime: '16:00',
+                    timeSpent: 60
+                }
+            ];
+            
+            // Update user data
+            allUserData['user1'] = {
+                projects: projects1,
+                entries: user1Entries
+            };
+            
+            allUserData['user2'] = {
+                projects: projects2,
+                entries: user2Entries
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('timeTrackerAllData', JSON.stringify(allUserData));
+            
+            // Display result
+            document.getElementById('dataResult').innerHTML = `
+                <p>Added sample time entries for both users:</p>
+                <pre>${JSON.stringify(allUserData, null, 2)}</pre>
+            `;
+        });
+        
+        document.getElementById('viewUserData').addEventListener('click', function() {
+            // Get all data
+            const users = JSON.parse(localStorage.getItem('timeTrackerUsers') || '[]');
+            const allUserData = JSON.parse(localStorage.getItem('timeTrackerAllData') || '{}');
+            const allTimers = JSON.parse(localStorage.getItem('timeTrackerAllTimers') || '{}');
+            
+            // Display result
+            document.getElementById('viewResult').innerHTML = `
+                <p><strong>Users:</strong></p>
+                <pre>${JSON.stringify(users, null, 2)}</pre>
+                
+                <p><strong>User Data:</strong></p>
+                <pre>${JSON.stringify(allUserData, null, 2)}</pre>
+                
+                <p><strong>Timers:</strong></p>
+                <pre>${JSON.stringify(allTimers, null, 2)}</pre>
+            `;
+        });
+        
+        document.getElementById('clearData').addEventListener('click', function() {
+            // Clear all time tracker data
+            localStorage.removeItem('timeTrackerUsers');
+            localStorage.removeItem('timeTrackerCurrentUser');
+            localStorage.removeItem('timeTrackerAllData');
+            localStorage.removeItem('timeTrackerAllTimers');
+            
+            // Also clear legacy data if present
+            localStorage.removeItem('timeTrackerProjects');
+            localStorage.removeItem('timeTrackerEntries');
+            localStorage.removeItem('timeTrackerTimers');
+            
+            // Display result
+            document.getElementById('clearResult').innerHTML = `
+                <p>All time tracker data has been cleared from localStorage.</p>
+            `;
+        });
+    </script>
+</body>
+</html>
