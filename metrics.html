@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker - Metrics</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="metrics.css">
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1 class="app-title">Time Tracker</h1>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Time Tracker</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="metrics.html" class="nav-link active">Metrics</a>
+        </div>
+        <div class="user-info">
+            <span class="user-name" id="currentUserName"></span>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </header>
+    
+    <div class="metrics-container">
+        <div class="metrics-sidebar">
+            <div class="view-selector">
+                <h3>View Metrics By</h3>
+                <div class="view-options">
+                    <button id="userViewBtn" class="view-btn active">My Time</button>
+                    <button id="projectViewBtn" class="view-btn">Project Time</button>
+                </div>
+            </div>
+            
+            <div class="time-range-selector">
+                <h3>Time Range</h3>
+                <div class="range-options">
+                    <button id="thisMonthBtn" class="range-btn active">This Month</button>
+                    <button id="lastMonthBtn" class="range-btn">Last Month</button>
+                    <button id="thisYearBtn" class="range-btn">This Year</button>
+                </div>
+            </div>
+            
+            <div id="projectSelector" class="project-selector" style="display: none;">
+                <h3>Select Project</h3>
+                <select id="projectSelect">
+                    <option value="">Select a project</option>
+                    <!-- Project options will be populated here -->
+                </select>
+            </div>
+        </div>
+        
+        <div class="metrics-content">
+            <div id="userView" class="metrics-view">
+                <div class="metrics-header">
+                    <h2>My Time Metrics</h2>
+                    <div class="time-period" id="currentPeriod">May 2025</div>
+                </div>
+                
+                <div class="metrics-cards">
+                    <div class="metric-card">
+                        <div class="metric-title">Total Hours</div>
+                        <div class="metric-value" id="totalHours">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Projects</div>
+                        <div class="metric-value" id="projectCount">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Daily Average</div>
+                        <div class="metric-value" id="dailyAverage">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Most Active Day</div>
+                        <div class="metric-value" id="mostActiveDay">-</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Time Distribution by Project</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="projectDistributionChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Daily Time Tracking</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="dailyTimeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="projectView" class="metrics-view" style="display: none;">
+                <div class="metrics-header">
+                    <h2>Project Time Metrics</h2>
+                    <div class="time-period" id="projectPeriod">May 2025</div>
+                </div>
+                
+                <div class="metrics-cards">
+                    <div class="metric-card">
+                        <div class="metric-title">Project Total Hours</div>
+                        <div class="metric-value" id="projectTotalHours">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Team Members</div>
+                        <div class="metric-value" id="teamMemberCount">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Project Status</div>
+                        <div class="metric-value" id="projectStatus">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Last Activity</div>
+                        <div class="metric-value" id="lastActivity">-</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Time Contribution by Team Member</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="teamContributionChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Daily Project Activity</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="projectDailyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="noDataView" class="no-data-view" style="display: none;">
+                <div class="no-data-message">
+                    <h3>No Data Available</h3>
+                    <p>There is no time tracking data available for the selected period or project.</p>
+                    <p>Start tracking time to see your metrics here!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="metrics.js"></script>
+</body>
+</html>

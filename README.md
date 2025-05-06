@@ -5,6 +5,8 @@ A browser-based time tracking application that helps you track time spent on dif
 ## Features
 
 - **User Accounts**: Register and login to track your hours separately from other users
+- **Project Management**: Create and manage projects with assigned users, managers, and liaisons
+- **Metrics & Analytics**: Beautiful charts and visualizations for time tracking data
 - **Calendar View**: Select dates to view and add time entries
 - **Project Input with Auto-Complete**: Dropdown menu remembers previously entered projects
 - **Flexible Time Entry**: Enter either start/end times or total time spent (automatically calculates timestamps)
@@ -39,6 +41,10 @@ A browser-based time tracking application that helps you track time spent on dif
    - Click "Delete" to remove an entry
    - Changes are automatically reflected in project totals
 10. **Export monthly data**: Click the "Export Month" button to download a text file with the current month's data and project totals
+11. **View metrics**: Click on the "Metrics" link in the navigation bar to view charts and analytics
+    - Switch between "My Time" and "Project Time" views
+    - Select different time ranges (This Month, Last Month, This Year)
+    - View project distribution, daily time tracking, and team contributions
 
 ## Data Storage
 
