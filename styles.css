@@ -385,33 +385,41 @@ body {
     display: flex;
     gap: 5px;
     margin-top: 8px;
+    justify-content: center;
 }
 
 .edit-entry-btn,
 .delete-entry-btn {
     background-color: transparent;
-    border: none;
+    border: 1px solid;
     cursor: pointer;
-    padding: 2px 5px;
+    padding: 3px 8px;
     font-size: 12px;
-    border-radius: 3px;
-    transition: background-color 0.2s;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-right: 5px;
 }
 
 .edit-entry-btn {
     color: #007bff;
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
 }
 
 .edit-entry-btn:hover {
-    background-color: rgba(0, 123, 255, 0.1);
+    background-color: rgba(0, 123, 255, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
 }
 
 .delete-entry-btn {
     color: #dc3545;
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.05);
 }
 
 .delete-entry-btn:hover {
-    background-color: rgba(220, 53, 69, 0.1);
+    background-color: rgba(220, 53, 69, 0.15);
+    box-shadow: 0 1px 3px rgba(220, 53, 69, 0.2);
 }
 
 .entry-time {
