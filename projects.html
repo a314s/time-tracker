@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker - Project Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="projects.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="app-title">Time Tracker</h1>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Time Tracker</a>
+            <a href="projects.html" class="nav-link active">Projects</a>
+        </div>
+        <div class="user-info">
+            <span class="user-name" id="currentUserName"></span>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </header>
+    
+    <div class="projects-container">
+        <div class="projects-sidebar">
+            <h2>Projects</h2>
+            <button id="createProjectBtn" class="create-project-btn">Create New Project</button>
+            <div id="projectsList" class="projects-list">
+                <!-- Projects will be listed here -->
+            </div>
+        </div>
+        
+        <div class="project-details">
+            <div id="projectForm" class="project-form">
+                <h2>Create New Project</h2>
+                <form id="newProjectForm">
+                    <div class="form-group">
+                        <label for="projectName">Project Name</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="projectManager">Project Manager</label>
+                        <select id="projectManager" required>
+                            <option value="">Select a manager</option>
+                            <!-- Options will be populated from users -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="projectLiaison">Project Liaison</label>
+                        <input type="text" id="projectLiaison" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Assigned Users</label>
+                        <div id="assignedUsers" class="assigned-users-container">
+                            <!-- Checkboxes for users will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="save-project-btn">Save Project</button>
+                        <button type="button" id="cancelProjectBtn" class="cancel-project-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="projectDetails" class="project-details-view">
+                <!-- Project details will be shown here when a project is selected -->
+                <div class="select-project-message">
+                    <p>Select a project from the list or create a new one</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="projects.js"></script>
+</body>
+</html>

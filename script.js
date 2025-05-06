@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedDate: new Date(),
         currentMonth: new Date(),
         projects: [],
+        assignedProjects: [],
         entries: [],
         projectTotals: {},
         activeTimers: {},
@@ -339,10 +340,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing options
         projectOptions.innerHTML = '';
         
-        // Add options from state
-        state.projects.forEach(project => {
+        // Add options from assigned projects
+        state.assignedProjects.forEach(project => {
             const option = document.createElement('option');
-            option.value = project;
+            option.value = project.name;
             projectOptions.appendChild(option);
         });
     }
@@ -590,8 +591,45 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get current user's data
         const userData = allUserData[state.userId] || { projects: [], entries: [] };
         
+        // Load project names from user data for backward compatibility
         state.projects = userData.projects || [];
         state.entries = userData.entries || [];
+        
+        // Load projects from project management system
+        const allProjects = JSON.parse(localStorage.getItem('timeTrackerProjects') || '[]');
+        
+        // Filter projects that the current user is assigned to
+        state.assignedProjects = allProjects.filter(project => 
+            project.assignedUsers && project.assignedUsers.includes(state.userId)
+        );
+        
+        // If no assigned projects but we have legacy projects, convert them
+        if (state.assignedProjects.length === 0 && state.projects.length > 0) {
+            // Create default projects from the legacy project names
+            state.projects.forEach(projectName => {
+                const newProject = {
+                    id: 'legacy-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+                    name: projectName,
+                    managerId: state.userId,
+                    liaison: 'N/A',
+                    assignedUsers: [state.userId],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Add to assigned projects
+                state.assignedProjects.push(newProject);
+                
+                // Add to all projects if it doesn't exist
+                if (!allProjects.some(p => p.name === projectName)) {
+                    allProjects.push(newProject);
+                }
+            });
+            
+            // Save updated projects
+            localStorage.setItem('timeTrackerProjects', JSON.stringify(allProjects));
+        }
+        
         updateProjectTotals();
         
         // Load active timers for current user
@@ -1101,7 +1139,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Create the full export content
-        const exportContent = `# Time Tracking Report: ${monthName} ${year}\n\n` +
+        const exportContent = `# Time Tracking Report: ${monthName} ${year}\n` +
+            `User: ${currentUser.name} (${currentUser.email})\n\n` +
             `## Project Totals\n\n${formattedProjectTotals || 'No entries for this month.'}\n\n` +
             `## Daily Entries${formattedEntries || '\n\nNo entries for this month.'}`;
         
