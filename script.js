@@ -227,6 +227,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Check if the project exists in the assigned projects list
+        const projectExists = state.assignedProjects.some(p => p.name === project);
+        if (!projectExists) {
+            alert('Please choose a valid project from the dropdown list. New projects must be created in the Projects tab.');
+            return;
+        }
+        
         if ((!startTime || !endTime) && !timeSpent) {
             alert('Please enter either start and end times or time spent');
             return;
@@ -276,16 +283,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add to state
         state.entries.push(entry);
         
-        // Add project to list if it's new
-        if (!state.projects.includes(project)) {
-            state.projects.unshift(project);
-            updateProjectOptions();
-        } else {
-            // Move project to the top of the list
+        // Move project to the top of the list if it exists in the legacy projects list
+        if (state.projects.includes(project)) {
             state.projects = state.projects.filter(p => p !== project);
             state.projects.unshift(project);
-            updateProjectOptions();
+        } else if (!state.projects.includes(project)) {
+            // Add to legacy projects list for backward compatibility
+            state.projects.unshift(project);
         }
+        
+        // Update project options
+        updateProjectOptions();
         
         // Update project totals
         updateProjectTotals();
@@ -340,12 +348,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing options
         projectOptions.innerHTML = '';
         
-        // Add options from assigned projects
-        state.assignedProjects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.name;
-            projectOptions.appendChild(option);
-        });
+        // Add options from assigned projects that are not completed
+        state.assignedProjects
+            .filter(project => !project.completed) // Only include active projects
+            .forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.name;
+                projectOptions.appendChild(option);
+            });
     }
 
     function updateProjectTotals() {

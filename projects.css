@@ -61,6 +61,20 @@
     border-color: #28a745;
 }
 
+.project-item.completed {
+    opacity: 0.7;
+}
+
+.project-item.completed .project-item-status {
+    color: #28a745;
+}
+
+.project-item-status {
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
 .project-item-name {
     font-weight: 500;
     color: #343a40;
@@ -154,8 +168,49 @@
     color: #343a40;
 }
 
+.project-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.project-status.active {
+    background-color: #e9f7ef;
+    color: #28a745;
+}
+
+.project-status.completed {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.project-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
 .project-edit-btn {
     background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.project-complete-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.project-delete-btn {
+    background-color: #dc3545;
     color: white;
     border: none;
     padding: 8px 15px;
@@ -237,4 +292,60 @@
 .nav-link.active {
     color: #007bff;
     font-weight: 500;
+}
+
+.delete-confirmation {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    color: #721c24;
+}
+
+.delete-confirmation h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.confirm-input {
+    margin: 15px 0;
+}
+
+.confirm-input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.confirm-delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.confirm-delete-btn:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.cancel-delete-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
 }
